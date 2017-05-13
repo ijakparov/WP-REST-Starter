@@ -37,7 +37,7 @@ All you have to do is configure your REST routes and data structures, and implem
   * [Example Field Updater Implementation](#example-field-updater-implementation)
   * [Example Formatter Implementation](#example-formatter-implementation)
 * [PSR-7](#psr-7)
-  * [Creating a PSR-7-compliant REST Request](#creating-a-psr-7-compliant-rest-resquest)
+  * [Creating a PSR-7-compliant REST Request](#creating-a-psr-7-compliant-rest-request)
   * [Creating a PSR-7-compliant REST Response](#creating-a-psr-7-compliant-rest-response)
   * [Using the PSR-7-compliant HTTP Messages](#using-the-psr-7-compliant-http-messages)
 
