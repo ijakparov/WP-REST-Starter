@@ -36,6 +36,10 @@ All you have to do is configure your REST routes and data structures, and implem
   * [Example Field Reader Implementation](#example-field-reader-implementation)
   * [Example Field Updater Implementation](#example-field-updater-implementation)
   * [Example Formatter Implementation](#example-formatter-implementation)
+* [PSR-7](#psr-7)
+  * [Creating a PSR-7-compliant REST Request](#creating-a-psr-7-compliant-rest-resquest)
+  * [Creating a PSR-7-compliant REST Response](#creating-a-psr-7-compliant-rest-response)
+  * [Using the PSR-7-compliant HTTP Messages](#using-the-psr-7-compliant-http-messages)
 
 ## Installation
 
@@ -70,7 +74,7 @@ For each of these, a short description as well as a code example on how to _take
 
 #### `wp_rest_starter.register_fields`
 
-When using the default field registry class, `Inpsyde\WPRESTStarter\Core\Field\Registry`, this action fires right before the fields are registered.
+When using the default field registry class, [`Inpsyde\WPRESTStarter\Core\Field\Registry`](src/Core/Field/Registry.php), this action fires right before the fields are registered.
 
 **Arguments:**
 
@@ -92,7 +96,7 @@ add_action( 'wp_rest_starter.register_fields', function ( Collection $fields ) {
 
 #### `wp_rest_starter.register_routes`
 
-When using the default route registry class, `Inpsyde\WPRESTStarter\Core\Route\Registry`, this action fires right before the routes are registered.
+When using the default route registry class, [`Inpsyde\WPRESTStarter\Core\Route\Registry`](src/Core/Route/Registry.php), this action fires right before the routes are registered.
 
 **Arguments:**
 
@@ -856,6 +860,74 @@ class SomeFormatter {
 	}
 }
 ```
+
+## PSR-7
+
+Since version 3.1.0, WP REST Starter comes with _enhanced_, [PSR-7](http://www.php-fig.org/psr/psr-7/)-compliant WordPress REST request and response classes, each implementing the according [PSR-7 HTTP message interface](https://github.com/php-fig/http-message).
+Using these classes enables you to integrate existing PSR-7 middleware into your RESTful WordPress project.
+
+### Creating a PSR-7-compliant REST Request
+
+If you are interested in a PSR-7-compliant request object, you can, of course, create a new instance yourself.
+You can do this like so, with all arguments being optional:
+
+```php
+use Inpsyde\WPRESTStarter\Core\Request\Request;
+
+$request = new Request(
+	$method,
+	$route,
+	$attributes,
+	$headers,
+	$body,
+	$protocol_version,
+	$server_params
+);
+```
+
+However, it is rather unlikely, because you usually do not want to define any request-based data on your own, ... since it is already included in the current request. :)
+More likely is that you want to make an existing REST request PSR-7-compliant, like so:
+
+```php
+use Inpsyde\WPRESTStarter\Core\Request\Request;
+
+// ...
+
+$request = Request::from_wp_rest_request( $request );
+```
+
+### Creating a PSR-7-compliant REST Response
+
+As for requests, you can also create a new response object yourself.
+Again, all arguments are optional.
+
+```php
+use Inpsyde\WPRESTStarter\Core\Response\Response;
+
+$response = new Response(
+	$data,
+	$status,
+	$headers,
+	$protocol_version,
+	$reason_phrase
+);
+```
+
+While this might make somewhat more sense compared to requests, the usual case would be to make an existing REST response PSR-7-compliant, which can be done like this:
+
+```php
+use Inpsyde\WPRESTStarter\Core\Response\Response;
+
+// ...
+
+$response = Response::from_wp_rest_response( $response );
+```
+
+### Using the PSR-7-compliant HTTP Messages
+
+Once you made a WordPress REST HTTP message PSR-7-compliant, you can just pass it on to PSR-7 middleware.
+Since you can do almost anything, it doesn't make too much sense to provide any examples here.
+But if you think you really have a good one, we're happy to accept pull requests for the readme file. :)
 
 ## License
 

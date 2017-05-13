@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.1.0
+
+* **Introduce** `~\Core\Request\Request`, a PSR-7-compliant WordPress REST request implementation.
+* **Introduce** `~\Core\Response\Response`, a PSR-7-compliant WordPress REST response implementation.
+
 ## 3.0.0
 
 * **[BREAKING]** **Require** PHP 7 or higher.
