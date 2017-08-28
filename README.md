@@ -37,9 +37,6 @@ All you have to do is configure your REST routes and data structures, and implem
   * [Example Field Updater Implementation](#example-field-updater-implementation)
   * [Example Formatter Implementation](#example-formatter-implementation)
 * [PSR-7](#psr-7)
-  * [Creating a PSR-7-compliant REST Request](#creating-a-psr-7-compliant-rest-request)
-  * [Creating a PSR-7-compliant REST Response](#creating-a-psr-7-compliant-rest-response)
-  * [Using the PSR-7-compliant HTTP Messages](#using-the-psr-7-compliant-http-messages)
 
 ## Installation
 
@@ -863,71 +860,9 @@ class SomeFormatter {
 
 ## PSR-7
 
-Since version 3.1.0, WP REST Starter comes with _enhanced_, [PSR-7](http://www.php-fig.org/psr/psr-7/)-compliant WordPress REST request and response classes, each implementing the according [PSR-7 HTTP message interface](https://github.com/php-fig/http-message).
-Using these classes enables you to integrate existing PSR-7 middleware into your RESTful WordPress project.
+If you want to make the WordPress REST request and responses [PSR-7](http://www.php-fig.org/psr/psr-7/)-compliant, for example, in order to integrate existing PSR-7 middleware into your RESTful WordPress project, you might want to have a look at the [`WPSR7`](https://github.com/inpsyde/WPSR7) package.
 
-### Creating a PSR-7-compliant REST Request
-
-If you are interested in a PSR-7-compliant request object, you can, of course, create a new instance yourself.
-You can do this like so, with all arguments being optional:
-
-```php
-use Inpsyde\WPRESTStarter\Core\Request\Request;
-
-$request = new Request(
-	$method,
-	$route,
-	$attributes,
-	$headers,
-	$body,
-	$protocol_version,
-	$server_params
-);
-```
-
-However, it is rather unlikely, because you usually do not want to define any request-based data on your own, ... since it is already included in the current request. :)
-More likely is that you want to make an existing REST request PSR-7-compliant, like so:
-
-```php
-use Inpsyde\WPRESTStarter\Core\Request\Request;
-
-// ...
-
-$request = Request::from_wp_rest_request( $request );
-```
-
-### Creating a PSR-7-compliant REST Response
-
-As for requests, you can also create a new response object yourself.
-Again, all arguments are optional.
-
-```php
-use Inpsyde\WPRESTStarter\Core\Response\Response;
-
-$response = new Response(
-	$data,
-	$status,
-	$headers,
-	$protocol_version,
-	$reason_phrase
-);
-```
-
-While this might make somewhat more sense compared to requests, the usual case would be to make an existing REST response PSR-7-compliant, which can be done like this:
-
-```php
-use Inpsyde\WPRESTStarter\Core\Response\Response;
-
-// ...
-
-$response = Response::from_wp_rest_response( $response );
-```
-
-### Using the PSR-7-compliant HTTP Messages
-
-Once you made a WordPress REST HTTP message PSR-7-compliant, you can just pass it on to PSR-7 middleware.
-Since you can do almost anything, it doesn't make too much sense to provide any examples here.
-But if you think you really have a good one, we're happy to accept pull requests for the readme file. :)
+The PSR-7 implementations included in this package (i.e., `~\Core\Request\Request` and `~\Core\Response\Response`) are **deprecated**, and will be removed with the next **major** release.
 
 ## License
 

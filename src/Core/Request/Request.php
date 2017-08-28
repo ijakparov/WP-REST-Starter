@@ -16,8 +16,11 @@ use function GuzzleHttp\Psr7\stream_for;
 /**
  * PSR-7-compliant WordPress REST request implementation.
  *
+ * @deprecated in favor of WPSR7 package.
+ *
  * @package Inpsyde\WPRESTStarter\Core\Request
  * @since   3.1.0
+ * @since   3.1.1 deprecated in favor of the new inpsyde/wpsr7 package.
  */
 final class Request extends \WP_REST_Request implements ServerRequestInterface {
 

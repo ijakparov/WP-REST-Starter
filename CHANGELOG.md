@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.1
+
+* **Deprecate** `~\Core\Request\Request` and `~\Core\Response\Response` classes in favor of the new [`WPSR7`](https://github.com/inpsyde/WPSR7) package.
+
 ## 3.1.0
 
 * **Introduce** `~\Core\Request\Request`, a PSR-7-compliant WordPress REST request implementation.
