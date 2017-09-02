@@ -37,6 +37,9 @@ All you have to do is configure your REST routes and data structures, and implem
   * [Example Field Updater Implementation](#example-field-updater-implementation)
   * [Example Formatter Implementation](#example-formatter-implementation)
 * [PSR-7](#psr-7)
+  * [Creating a PSR-7-compliant REST Request](#creating-a-psr-7-compliant-rest-request)
+  * [Creating a PSR-7-compliant REST Response](#creating-a-psr-7-compliant-rest-response)
+  * [Using the PSR-7-compliant HTTP Messages](#using-the-psr-7-compliant-http-messages)
 
 ## Installation
 
@@ -860,9 +863,99 @@ class SomeFormatter {
 
 ## PSR-7
 
-If you want to make the WordPress REST request and responses [PSR-7](http://www.php-fig.org/psr/psr-7/)-compliant, for example, in order to integrate existing PSR-7 middleware into your RESTful WordPress project, you might want to have a look at the [`WPSR7`](https://github.com/inpsyde/WPSR7) package.
+In the PHP world in general, there is a standard (recommendation) when it comes to HTTP messages: [PSR-7](http://www.php-fig.org/psr/psr-7/).
+Despite things like Calypso, Gutenberg and the growing JavaScript codebase in general, WordPress is written in PHP.
+Thus, wouldn’t it be nice to do what the rest of the PHP world is doing?
+Isn’t there some way to leverage all the existing PSR-7 middleware?
 
-The PSR-7 implementations included in this package (i.e., `~\Core\Request\Request` and `~\Core\Response\Response`) are **deprecated**, and will be removed with the next **major** release.
+Well, there is!
+Since version 3.1.0, WP REST Starter comes with _enhanced_, PSR-7-compliant WordPress REST request and response classes, each implementing the according [PSR-7 HTTP message interface](https://github.com/php-fig/http-message).
+Using these classes enables you to integrate existing PSR-7 middleware into your RESTful WordPress project.
+
+### Creating a PSR-7-compliant WordPress REST Request
+
+If you are interested in a PSR-7-compliant WordPress REST request object, you can, of course, create a new instance yourself.
+You can do this like so, with all arguments being optional:
+
+```php
+use Inpsyde\WPRESTStarter\Core\Request\Request;
+
+$request = new Request(
+	$method,
+	$route,
+	$attributes
+);
+```
+
+However, it is rather unlikely, because you usually do not want to define any request-based data on your own, ... since it is already included in the current request. :)
+More likely is that you want to make an existing WordPress request object PSR-7-compliant, like so:
+
+```php
+use Inpsyde\WPRESTStarter\Core\Request\Request;
+
+// ...
+
+$request = Request::from_wp_request( $request );
+```
+
+### Creating a PSR-7-compliant WordPress REST Response
+
+As for requests, you can also create a new response object yourself.
+Again, all arguments are optional.
+
+```php
+use Inpsyde\WPRESTStarter\Core\Response\Response;
+
+$response = new Response(
+	$data,
+	$status,
+	$headers
+);
+```
+
+While this might make somewhat more sense compared to requests, the usual case would be to make an existing WordPress response object PSR-7-compliant, which can be done like this:
+
+```php
+use Inpsyde\WPRESTStarter\Core\Response\Response;
+
+// ...
+
+$response = Response::from_wp_response( $response );
+```
+
+### Using the PSR-7-compliant WordPress HTTP Messages
+
+Once you made a WordPress HTTP message PSR-7-compliant, you can just pass it on to your PSR-7 middleware stack.
+Since you can do almost anything, the following example is just **one** way to do things.
+
+```
+// Hook into your desired filter.
+add_filter( 'rest_post_dispatch', function (
+	\WP_HTTP_Response $response,
+	\WP_REST_Server $server,
+	\WP_REST_Request $request
+) {
+
+	$logger = ( new Logger( 'access' ) )->pushHandler( new ErrorLogHandler() );
+
+	// Set up your middleware stack.
+	$middlewares = [
+		Middleware::ResponseTime(),
+		Middleware::ClientIp()->remote(),
+		Middleware::Uuid(),
+		Middleware::AccessLog( $logger )->combined(),
+	];
+
+	// Set up a middleware dispatcher.
+	$dispatcher = ( new RelayBuilder() )->newInstance( $middlewares );
+
+	// Dispatch the request.
+	return $dispatcher(
+		Request::from_wp_rest_request( $request ),
+		Response::from_wp_rest_response( $response )
+	);
+}, 0, 3 );
+```
 
 ## License
 

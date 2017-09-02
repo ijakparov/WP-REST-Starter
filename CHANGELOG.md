@@ -1,8 +1,11 @@
 # Changelog
 
-## 3.1.1
+## 4.0.0
 
-* **Deprecate** `~\Core\Request\Request` and `~\Core\Response\Response` classes in favor of the new [`WPSR7`](https://github.com/inpsyde/WPSR7) package.
+* **[BREAKING]** **Limit** constructor arguments of `~\Core\Request\Request` to the ones of `\WP_REST_Request`.
+* **[BREAKING]** **Rename** `~\Core\Request\Request::from_wp_rest_request()` to `~\Core\Request\Request::from_wp_request()`.
+* **[BREAKING]** **Limit** constructor arguments of `~\Core\Response\Response` to the ones of `\WP_HTTP_Response`.
+* **[BREAKING]** **Rename** `~\Core\Response\Response::from_wp_rest_response()` to `~\Core\Response\Response::from_wp_response()`.
 
 ## 3.1.0
 

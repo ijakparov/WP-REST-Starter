@@ -40,9 +40,6 @@
     "mockery/mockery": "~0.9",
     "phpunit/phpunit": "^6.0"
   },
-  "suggest": {
-    "inpsyde/wpsr7": "Enables you to use PSR-7 middleware in your RESTful WordPress projects."
-  },
   "autoload": {
     "psr-4": {
       "Inpsyde\\WPRESTStarter\\": "src"
@@ -56,7 +53,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "3.1.x-dev"
+      "dev-master": "4.0.x-dev"
     }
   }
 }

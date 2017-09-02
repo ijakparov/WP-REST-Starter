@@ -13,11 +13,9 @@ use function GuzzleHttp\Psr7\stream_for;
 /**
  * PSR-7-compliant WordPress REST response implementation.
  *
- * @deprecated in favor of WPSR7 package.
- *
  * @package Inpsyde\WPRESTStarter\Core\Response
  * @since   3.1.0
- * @since   3.1.1 deprecated in favor of the new inpsyde/wpsr7 package.
+ * @since   4.0.0 Rename from_wp_rest_response method to from_wp_response.
  */
 final class Response extends \WP_REST_Response implements ResponseInterface {
 
@@ -29,30 +27,16 @@ final class Response extends \WP_REST_Response implements ResponseInterface {
 	/**
 	 * Constructor. Sets up the properties.
 	 *
-	 * @since  3.1.0
+	 * @since 3.1.0
+	 * @since 4.0.0 Limit arguments to the ones of \WP_HTTP_Response.
 	 *
-	 * @param mixed    $data             Optional. Response data. Defaults to null.
-	 * @param int      $status           Optional. HTTP status code. Defaults to 200.
-	 * @param string[] $headers          Optional. HTTP headers, keys to string values. Defaults to empty array.
-	 * @param string   $protocol_version Optional. HTTP protocol version. Defaults to '1.1'.
-	 * @param string   $reason_phrase    Optional. Reason phrase. Defaults to empty string.
+	 * @param mixed    $data    Optional. Response data. Defaults to null.
+	 * @param int      $status  Optional. HTTP status code. Defaults to 200.
+	 * @param string[] $headers Optional. HTTP headers, keys to string values. Defaults to empty array.
 	 */
-	public function __construct(
-		$data = null,
-		int $status = 200,
-		array $headers = [],
-		string $protocol_version = '1.1',
-		string $reason_phrase = ''
-	) {
+	public function __construct( $data = null, int $status = 200, array $headers = [] ) {
 
-		// Status code, headers and data of the internal PSR-7 HTTP message will be set implicitly via this instance.
-		$this->http_message = new PSR7Response(
-			0,
-			[],
-			null,
-			$protocol_version,
-			$reason_phrase
-		);
+		$this->http_message = new PSR7Response();
 
 		parent::__construct( $data, $status, $headers );
 
@@ -61,25 +45,32 @@ final class Response extends \WP_REST_Response implements ResponseInterface {
 	}
 
 	/**
-	 * Returns an instance based on the given WordPress REST response object.
+	 * Returns an instance based on the given WordPress response object.
 	 *
-	 * @since 3.1.0
+	 * @since 4.0.0
 	 *
-	 * @param \WP_REST_Response $response WordPress REST response object.
+	 * @param \WP_HTTP_Response $response WordPress response object.
 	 *
 	 * @return Response
 	 */
-	public static function from_wp_rest_response( \WP_REST_Response $response ): Response {
+	public static function from_wp_response( \WP_HTTP_Response $response ): Response {
 
 		if ( $response instanceof self ) {
 			return $response;
 		}
 
-		return new self(
+		$instance = new self(
 			$response->get_data(),
 			(int) $response->get_status(),
 			(array) ( $response->get_headers() ?? [] )
 		);
+		if ( $response instanceof \WP_REST_Response ) {
+			$instance->add_links( $response->get_links() );
+			$instance->set_matched_handler( $response->get_matched_handler() );
+			$instance->set_matched_route( $response->get_matched_route() );
+		}
+
+		return $instance;
 	}
 
 	/**

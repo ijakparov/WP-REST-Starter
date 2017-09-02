@@ -16,11 +16,9 @@ use function GuzzleHttp\Psr7\stream_for;
 /**
  * PSR-7-compliant WordPress REST request implementation.
  *
- * @deprecated in favor of WPSR7 package.
- *
  * @package Inpsyde\WPRESTStarter\Core\Request
  * @since   3.1.0
- * @since   3.1.1 deprecated in favor of the new inpsyde/wpsr7 package.
+ * @since   4.0.0 Rename from_wp_rest_request method to from_wp_request.
  */
 final class Request extends \WP_REST_Request implements ServerRequestInterface {
 
@@ -32,65 +30,48 @@ final class Request extends \WP_REST_Request implements ServerRequestInterface {
 	/**
 	 * Constructor. Sets up the properties.
 	 *
-	 * @since  3.1.0
+	 * @since 3.1.0
+	 * @since 4.0.0 Limit arguments to the ones of \WP_REST_Request.
 	 *
-	 * @param string     $method           Optional. HTTP method. Defaults to empty string.
-	 * @param string     $route            Optional. Request route. Defaults to empty string.
-	 * @param array      $attributes       Optional. Request attributes. Defaults to empty array.
-	 * @param string[][] $headers          Optional. HTTP headers, keys to arrays of values. Defaults to empty array.
-	 * @param mixed      $body             Optional. Request body data. Defaults to null.
-	 * @param string     $protocol_version Optional. HTTP protocol version. Defaults to '1.1'.
-	 * @param array      $server_params    Optional. Server parameters. Defaults to empty array.
+	 * @param string $method     Optional. HTTP method. Defaults to empty string.
+	 * @param string $route      Optional. Request route. Defaults to empty string.
+	 * @param array  $attributes Optional. Request attributes. Defaults to empty array.
 	 */
-	public function __construct(
-		string $method = '',
-		string $route = '',
-		array $attributes = [],
-		array $headers = [],
-		$body = null,
-		string $protocol_version = '1.1',
-		array $server_params = []
-	) {
+	public function __construct( string $method = '', string $route = '', array $attributes = [] ) {
 
-		// Method, URI, headers and body of the internal PSR-7 HTTP message will be set implicitly via this instance.
-		$this->http_message = new PSR7Request(
-			'',
-			'',
-			[],
-			null,
-			$protocol_version,
-			$server_params
-		);
+		$this->http_message = new PSR7Request( $method, '' );
 
 		parent::__construct( $method, $route, $attributes );
-
-		$this->set_headers( $headers );
-
-		$this->set_body( $body );
 	}
 
 	/**
-	 * Returns an instance based on the given WordPress REST request object.
+	 * Returns an instance based on the given WordPress request object.
 	 *
-	 * @since 3.1.0
+	 * @since 4.0.0
 	 *
-	 * @param \WP_REST_Request $request WordPress REST request object.
+	 * @param \WP_REST_Request $request WordPress request object.
 	 *
 	 * @return Request
 	 */
-	public static function from_wp_rest_request( \WP_REST_Request $request ): Request {
+	public static function from_wp_request( \WP_REST_Request $request ): Request {
 
 		if ( $request instanceof self ) {
 			return $request;
 		}
 
-		return new self(
+		$instance = new self(
 			(string) $request->get_method(),
 			(string) $request->get_route(),
-			(array) ( $request->get_attributes() ?? [] ),
-			(array) ( $request->get_headers() ?? [] ),
-			(string) $request->get_body()
+			(array) ( $request->get_attributes() ?? [] )
 		);
+		$instance->set_body( $request->get_body() );
+		$instance->set_default_params( $request->get_default_params() );
+		$instance->set_file_params( $request->get_file_params() );
+		$instance->set_headers( $request->get_headers() );
+		$instance->set_query_params( $request->get_query_params() );
+		$instance->set_url_params( $request->get_url_params() );
+
+		return $instance;
 	}
 
 	/**
