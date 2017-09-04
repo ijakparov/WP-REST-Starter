@@ -928,7 +928,7 @@ $response = Response::from_wp_response( $response );
 Once you made a WordPress HTTP message PSR-7-compliant, you can just pass it on to your PSR-7 middleware stack.
 Since you can do almost anything, the following example is just **one** way to do things.
 
-```
+```php
 // Hook into your desired filter.
 add_filter( 'rest_post_dispatch', function (
 	\WP_HTTP_Response $response,
@@ -951,8 +951,8 @@ add_filter( 'rest_post_dispatch', function (
 
 	// Dispatch the request.
 	return $dispatcher(
-		Request::from_wp_rest_request( $request ),
-		Response::from_wp_rest_response( $response )
+		Request::from_wp_request( $request ),
+		Response::from_wp_response( $response )
 	);
 }, 0, 3 );
 ```
