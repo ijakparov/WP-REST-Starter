@@ -30,9 +30,9 @@ final class Collection implements Common\Field\Collection {
 	 *
 	 * @return Common\Field\Collection Collection object.
 	 */
-	public function add( string $resource, Common\Field\Field $field ): Common\Field\Collection {
+	public function add( (array) $resource, Common\Field\Field $field ): Common\Field\Collection {
 
-		$this->fields[ $resource ][ $field->name() ] = $field;
+		$this->fields[ implode('|', $resource) ][ $field->name() ] = $field;
 
 		return $this;
 	}
