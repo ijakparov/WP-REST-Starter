@@ -149,7 +149,7 @@ final class Options implements ExtensibleOptions, SchemaAwareOptions {
 	 */
 	public function set_schema( Schema $schema ): SchemaAwareOptions {
 
-		$this->options['schema'] = [ $schema, 'definition' ];
+		$this->options['schema'] = $schema->definition();
 
 		return $this;
 	}
